@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Model\User as UserModel;
+use App\DTO\UserDTO;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -12,10 +12,10 @@ class UsersController extends AbstractController
 {
     /**
      * @Rest\Post("/users", name="post_users")
-     * @ParamConverter("userModel", converter="fos_rest.request_body")
+     * @ParamConverter("userDTO", converter="fos_rest.request_body")
      */
-    public function register(UserModel $userModel)
+    public function register(UserDTO $userDTO)
     {
-        return $this->json($userModel);
+        return $this->json($userDTO);
     }
 }

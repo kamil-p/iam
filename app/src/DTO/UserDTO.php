@@ -1,8 +1,16 @@
 <?php
 
-namespace App\Model;
+namespace App\DTO;
 
-class User
+use ApiPlatform\Core\Annotation\ApiResource;
+
+/**
+ * @ApiResource(
+ *     collectionOperations={["get","post"]},
+ *     itemOperations={["get","post"]}
+ * )
+ */
+class UserDTO
 {
     private string $email;
 
@@ -23,6 +31,4 @@ class User
     {
         return $this->password;
     }
-
-
 }

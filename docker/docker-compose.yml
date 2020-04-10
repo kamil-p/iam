@@ -1,30 +1,30 @@
 version: '3'
 
 services:
-  db:
-    image: percona:ps-8
-    volumes:
-      - ./volumes/db:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_APP_DB}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - 3306:3306
+    db:
+        image: percona:ps-8
+        volumes:
+            - ./volumes/db:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_APP_DB}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        ports:
+            - 3306:3306
 
-  iam_php:
-    build:
-      context: php_fpm
-      args:
-        TIMEZONE: ${TIMEZONE}
-    volumes:
-      - ../app:/var/www/app
-      - ./volumes/logs/iam_php/:/var/www/symfony/var/logs
-  iam_nginx:
-    build: nginx
-    ports:
-      - 80:80
-    volumes:
-      - ../iam/symfony:/var/www/symfony
-      - ./volumes/logs/nginx/:/var/log/nginx
+    iam_php:
+        build:
+            context: php_fpm
+            args:
+                TIMEZONE: ${TIMEZONE}
+        volumes:
+            - ../app:/var/www/app
+            - ./volumes/logs/iam_php/:/var/www/symfony/var/logs
+    iam_nginx:
+        build: nginx
+        ports:
+            - 80:80
+        volumes:
+            - ../app:/var/www/app
+            - ./volumes/logs/nginx/:/var/log/nginx
