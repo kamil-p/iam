@@ -23,11 +23,11 @@ RUN docker-php-ext-install pdo pdo_mysql
 
 
 # install xdebug
-RUN pecl install apcu \
-    xdebug \
-&& docker-php-ext-enable xdebug \
-&& docker-php-ext-enable apcu \
-&& docker-php-ext-install opcache
+RUN pecl install xdebug \
+#    apcu \
+&& docker-php-ext-enable xdebug
+#&& docker-php-ext-enable apcu \
+#&& docker-php-ext-install opcache
 
 COPY php-ini-overrides.ini /usr/local/etc/php/php.ini
 

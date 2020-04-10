@@ -11,8 +11,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 class UsersController extends AbstractController
 {
     /**
-     * @Rest\Post("/users", name="post_users")
-     * @ParamConverter("userDTO", converter="fos_rest.request_body")
+     * @ Rest\Post("/users", name="post_users")
+     * @ ParamConverter("userDTO", converter="fos_rest.request_body")
      */
     public function register(UserDTO $userDTO)
     {
