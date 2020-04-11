@@ -4,7 +4,7 @@ services:
     db:
         image: percona:ps-8
         volumes:
-            - ./volumes/db:/var/lib/mysql
+            - ./volumes/db:/var/lib/mysql:delegated
         environment:
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_APP_DB}
@@ -19,12 +19,12 @@ services:
             args:
                 TIMEZONE: ${TIMEZONE}
         volumes:
-            - ../app:/var/www/app
-            - ./volumes/logs/iam_php/:/var/www/symfony/var/logs
+            - ../app:/var/www/app:delegated
+            - ./volumes/logs/iam_php/:/var/www/symfony/var/logs:delegated
     iam_nginx:
         build: nginx
         ports:
             - 80:80
         volumes:
-            - ../app:/var/www/app
-            - ./volumes/logs/nginx/:/var/log/nginx
+            - ../app:/var/www/app:delegated
+            - ./volumes/logs/nginx/:/var/log/nginx:delegated

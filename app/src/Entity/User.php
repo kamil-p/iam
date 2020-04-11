@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     normalizationContext={"groups"={"read"}},
  *     denormalizationContext={"groups"={"write"}},
  *     collectionOperations={"post"},
- *     itemOperations={}
+ *     itemOperations={"get"}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
@@ -28,7 +28,7 @@ class User implements UserInterface
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
      */
-    protected UuidInterface $id;
+    private UuidInterface $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true, nullable=false)
@@ -46,6 +46,15 @@ class User implements UserInterface
      * @Groups("write")
      */
     private string $password;
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $data = '';
+    }
+
 
     public function getId(): UuidInterface
     {
