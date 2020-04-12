@@ -10,6 +10,7 @@
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/doctrine-migrations-bundle": "^2.0",
         "doctrine/orm": "^2.7",
+        "firebase/php-jwt": "^5.2",
         "gedmo/doctrine-extensions": "^2.4",
         "nubs/random-name-generator": "^2.1",
         "ramsey/uuid-doctrine": "^1.5",
@@ -21,7 +22,8 @@
         "symfony/framework-bundle": "4.4.*",
         "symfony/security-bundle": "4.4.*",
         "symfony/serializer": "4.4.*",
-        "symfony/yaml": "4.4.*"
+        "symfony/yaml": "4.4.*",
+        "ext-openssl": "*"
     },
     "require-dev": {
         "symfony/maker-bundle": "^1.14",

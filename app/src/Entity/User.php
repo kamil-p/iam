@@ -3,11 +3,16 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
@@ -16,11 +21,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     collectionOperations={"post"},
  *     itemOperations={"get"}
  * )
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
 class User implements UserInterface
 {
     use TimestampableEntity;
+    use SoftDeleteableEntity;
 
     /**
      * @ORM\Id
@@ -31,8 +38,9 @@ class User implements UserInterface
     private UuidInterface $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true, nullable=false)
+     * @Assert\Email()
      * @Groups({"write", "read"})
+     * @ORM\Column(type="string", length=180, unique=true, nullable=false)
      */
     private string $email;
 
@@ -48,13 +56,15 @@ class User implements UserInterface
     private string $password;
 
     /**
-     * User constructor.
+     * @ORM\OneToMany(targetEntity="Token", mappedBy="user", cascade={"persist"})
+     * @var Collection|Token[]
      */
+    private Collection $tokens;
+
     public function __construct()
     {
-        $data = '';
+        $this->tokens = new ArrayCollection();
     }
-
 
     public function getId(): UuidInterface
     {
@@ -80,7 +90,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -102,12 +112,20 @@ class User implements UserInterface
         return $this;
     }
 
+    public function createNewToken(): Token
+    {
+        $token = new Token($this);
+        $this->tokens->add($token);
+
+        return $token;
+    }
+
     /**
      * @see UserInterface
      */
     public function getPassword(): string
     {
-        return (string) $this->password;
+        return (string)$this->password;
     }
 
     public function setPassword(string $password): self
@@ -132,5 +150,13 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId()->toString(),
+            'email' => $this->getEmail()
+        ];
     }
 }

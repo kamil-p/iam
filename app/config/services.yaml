@@ -5,6 +5,10 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     container.dumper.inline_factories: true
+    env(PRIVATE_KEY): '%env(string:private_key_path)%'
+    env(PUBLIC_KEY): '%env(string:public_key_path)%'
+    private_key: '%env(file:PRIVATE_KEY)%'
+    public_key: '%env(file:PUBLIC_KEY)%'
 
 services:
     # default configuration for services in *this* file
@@ -33,3 +37,18 @@ services:
         class: App\Repository\UserRepository
         arguments: ['@doctrine']
         tags: ['doctrine.repository_service']
+
+    App\Repository\TokenRepository:
+        class: App\Repository\TokenRepository
+        arguments: ['@doctrine']
+        tags: ['doctrine.repository_service']
+
+    App\Swagger\SwaggerDecorator:
+        decorates: 'api_platform.swagger.normalizer.documentation'
+        arguments: ['@App\Swagger\SwaggerDecorator.inner']
+        autoconfigure: false
+
+    App\Service\TokenService:
+        arguments:
+            $privateKey: '%private_key%'
+            $publicKey: '%public_key%'
