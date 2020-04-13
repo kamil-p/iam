@@ -66,6 +66,17 @@ class Token
         return $this->expiresAt;
     }
 
+    public function setExpiresAt(DateTime $expiresAt): void
+    {
+        $this->expiresAt = $expiresAt;
+    }
+
+    public function updateExpiresAt()
+    {
+        $expiresAt = new DateTime();
+        $this->setExpiresAt($expiresAt->modify('+7 days'));
+    }
+
     public function getUser(): User
     {
         return $this->user;

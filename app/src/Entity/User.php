@@ -39,6 +39,7 @@ class User implements UserInterface
 
     /**
      * @Assert\Email()
+     * @Assert\NotBlank()
      * @Groups({"write", "read"})
      * @ORM\Column(type="string", length=180, unique=true, nullable=false)
      */
@@ -50,6 +51,7 @@ class User implements UserInterface
     private array $roles = [];
 
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="string", nullable=false)
      * @Groups("write")
      */

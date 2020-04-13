@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * @Route("/api")
@@ -24,11 +25,37 @@ class AuthenticationController extends AbstractController
 
     /**
      * @Rest\Post("/authentication", name="api_post_authentication")
-     * @ParamConverter("authentication", converter="fos_rest.request_body")
+     * @ParamConverter("authentication", converter="fos_rest.request_body", options={"validator"={"groups"={"authentication"}}})
      */
-    public function authenticate(Authentication $authentication)
+    public function authenticate(Authentication $authentication, ConstraintViolationListInterface $validationErrors)
     {
-        $this->tokenService->createTokens($authentication);
-        return $this->json($authentication, Response::HTTP_OK, [], ['groups' => 'read']);
+        if ($validationErrors->count() > 0) {
+            return $this->json($validationErrors, Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->json(
+            $this->tokenService->createTokens($authentication),
+            Response::HTTP_OK,
+            [],
+            ['groups' => 'read']
+        );
+    }
+
+    /**
+     * @Rest\Post("/refresh_token", name="api_post_refresh_token")
+     * @ParamConverter("authentication", converter="fos_rest.request_body", options={"validator"={"groups"={"refresh_token"}}})
+     */
+    public function refreshToken(Authentication $authentication, ConstraintViolationListInterface $validationErrors)
+    {
+        if ($validationErrors->count() > 0) {
+            return $this->json($validationErrors, Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->json(
+            $this->tokenService->refreshToken($authentication),
+            Response::HTTP_OK,
+            [],
+            ['groups' => 'read']
+        );
     }
 }

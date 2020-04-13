@@ -330,6 +330,9 @@
     "symfony/mime": {
         "version": "v5.0.1"
     },
+    "symfony/options-resolver": {
+        "version": "v4.4.7"
+    },
     "symfony/polyfill-intl-idn": {
         "version": "v1.13.1"
     },

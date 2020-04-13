@@ -5,14 +5,25 @@ namespace App\Resources;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Authentication
 {
     private const SCHEMA_AUTHENTICATION = 'Authentication';
     private const SCHEMA_IDENTITY = 'Identity';
+    private const SCHEMA_REFRESH_TOKEN = 'RefreshToken';
 
+    /**
+     * @Assert\Email(groups={"authentication"})
+     * @Assert\NotBlank(groups={"authentication"})
+     * @var string
+     */
     private string $email;
 
+    /**
+     * @Assert\NotBlank(groups={"authentication"})
+     * @var string
+     */
     private string $password;
 
     /**
@@ -21,6 +32,7 @@ class Authentication
     private string $token = 'token';
 
     /**
+     * @Assert\NotBlank(groups={"refresh_token"})
      * @Groups("read")
      * @SerializedName("refresh_token")
      */
@@ -94,7 +106,16 @@ class Authentication
                         'readOnly' => true,
                     ],
                 ],
-            ]
+            ],
+            self::SCHEMA_REFRESH_TOKEN => [
+                'type' => 'object',
+                'properties' => [
+                    'refresh_token' => [
+                        'type' => 'string',
+                        'example' => 'b7c19d63674fe362dea840e784b661ce8b42169e285ea1530bd477c783bd0f57ef8fc84efcbde0bddd082b87c95a04475be7',
+                    ],
+                ]
+            ],
         ];
     }
 
@@ -129,7 +150,36 @@ class Authentication
                         ],
                     ],
                 ],
-            ]
+            ],
+            '/api/refresh_token' => [
+                'post' => [
+                    'tags' => [Authentication::SCHEMA_AUTHENTICATION],
+                    'operationId' => 'postRefreshToken',
+                    'summary' => 'Refresh JWT token.',
+                    'requestBody' => [
+                        'description' => 'Refresh JWT Token',
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/'.self::SCHEMA_REFRESH_TOKEN,
+                                ],
+                            ],
+                        ],
+                    ],
+                    'responses' => [
+                        Response::HTTP_OK => [
+                            'description' => 'Get JWT token',
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => [
+                                        '$ref' => '#/components/schemas/'.Authentication::SCHEMA_IDENTITY,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 }

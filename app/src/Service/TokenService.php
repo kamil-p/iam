@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Repository\TokenRepository;
 use App\Repository\UserRepository;
 use App\Resources\Authentication;
 use DateTime;
@@ -20,17 +21,20 @@ class TokenService
 
     private UserRepository $userRepository;
 
+    private TokenRepository $tokenRepository;
+
     private UserPasswordEncoderInterface $passwordEncoder;
 
-    public function __construct(string $privateKey, string $publicKey, UserRepository $userRepository, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(string $privateKey, string $publicKey, UserRepository $userRepository, TokenRepository $tokenRepository, UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->privateKey = $privateKey;
         $this->publicKey = $publicKey;
         $this->userRepository = $userRepository;
+        $this->tokenRepository = $tokenRepository;
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function createTokens(Authentication $authentication)
+    public function createTokens(Authentication $authentication): Authentication
     {
         $user = $this->userRepository->findByEmail($authentication->getEmail());
 
@@ -44,9 +48,28 @@ class TokenService
         $authentication->setRefreshToken($token->getRefreshToken());
 
         $this->userRepository->save($user);
+
+        return $authentication;
     }
 
-    public function createJWTTokenFromUser(User $user): string
+    public function refreshToken(Authentication $authentication): Authentication
+    {
+        $token = $this->tokenRepository->findByRefreshToken($authentication->getRefreshToken());
+
+        if(!$token) {
+            throw new BadRequestHttpException("Invalid password");
+        }
+
+        $authentication->setToken($this->createJWTTokenFromUser($token->getUser()));
+        $authentication->setRefreshToken($token->getRefreshToken());
+        $token->updateExpiresAt();
+
+        $this->tokenRepository->save($token);
+
+        return $authentication;
+    }
+
+    private function createJWTTokenFromUser(User $user): string
     {
         $expiresAt = new DateTime();
         $expiresAt->modify('+1 hour');
