@@ -30,6 +30,6 @@ Below screenshot present available endpoints:
 To run it, you need to have installed first [Docker](https://www.docker.com/). Next:
  - Go to `docker` directory copy and paste `.env.dist` without `.dist` suffix, you should end up with file `.env`
  which stores environment variables used by docker. Feel free to modify them to your purposes. 
- - Go to `app` directory and to the same with `.end.dist` file.
+ - Go to `app` directory and to the same with `.env.dist` file.
  - After you finish that you go once again to `docker` directory and execute the command `docker-compose up` after docker 
  finished you can start using `IAM` by going to [localhost/api](http://localhost/api) page. 
