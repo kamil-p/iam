@@ -48,7 +48,7 @@ services:
         arguments: ['@App\Swagger\SwaggerDecorator.inner']
         autoconfigure: false
 
-    App\Service\TokenService:
+    App\Security\JWT:
         arguments:
             $privateKey: '%private_key%'
             $publicKey: '%public_key%'

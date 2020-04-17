@@ -3,21 +3,20 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Exception\Token\TokenExpiredException;
 use App\Repository\TokenRepository;
 use App\Repository\UserRepository;
 use App\Resources\Authentication;
+use App\Security\JWT;
 use DateTime;
-use \Firebase\JWT\JWT;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class TokenService
 {
-    private const ALGORITHM = 'RS256';
+    const PROPERTY_EXPIRES_AT = 'expiresAt';
 
-    private string $privateKey;
-
-    private string $publicKey;
+    private JWT $jwt;
 
     private UserRepository $userRepository;
 
@@ -25,10 +24,9 @@ class TokenService
 
     private UserPasswordEncoderInterface $passwordEncoder;
 
-    public function __construct(string $privateKey, string $publicKey, UserRepository $userRepository, TokenRepository $tokenRepository, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(JWT $jwt, UserRepository $userRepository, TokenRepository $tokenRepository, UserPasswordEncoderInterface $passwordEncoder)
     {
-        $this->privateKey = $privateKey;
-        $this->publicKey = $publicKey;
+        $this->jwt = $jwt;
         $this->userRepository = $userRepository;
         $this->tokenRepository = $tokenRepository;
         $this->passwordEncoder = $passwordEncoder;
@@ -75,8 +73,21 @@ class TokenService
         $expiresAt->modify('+1 hour');
 
         $payload = $user->toArray();
-        $payload['expiresAt'] = $expiresAt->getTimestamp();
+        $payload[self::PROPERTY_EXPIRES_AT] = $expiresAt->getTimestamp();
 
-        return JWT::encode($payload, $this->privateKey, self::ALGORITHM);
+        return $this->jwt->encode($payload);
+    }
+
+    public function getUserFromToken(string $token): User
+    {
+        $object = $this->jwt->decode($token);
+        $now = new DateTime();
+        $expiresAt = (new DateTime())->setTimestamp($object->{self::PROPERTY_EXPIRES_AT});
+
+        if ($now > $expiresAt) {
+            throw new TokenExpiredException();
+        }
+
+        return $this->userRepository->find($object->id);
     }
 }
