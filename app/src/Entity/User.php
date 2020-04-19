@@ -16,8 +16,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
- *     normalizationContext={"groups"={"read"}},
- *     denormalizationContext={"groups"={"write"}},
+ *     normalizationContext={"groups"={"signup-response"}},
+ *     denormalizationContext={"groups"={"signup-request"}},
  *     collectionOperations={"post"},
  *     itemOperations={"get"}
  * )
@@ -40,7 +40,7 @@ class User implements UserInterface
     /**
      * @Assert\Email()
      * @Assert\NotBlank()
-     * @Groups({"write", "read"})
+     * @Groups({"signup-request", "signup-response"})
      * @ORM\Column(type="string", length=180, unique=true, nullable=false)
      */
     private string $email;
@@ -53,7 +53,7 @@ class User implements UserInterface
     /**
      * @Assert\NotBlank()
      * @ORM\Column(type="string", nullable=false)
-     * @Groups("write")
+     * @Groups("signup-request")
      */
     private string $password;
 
