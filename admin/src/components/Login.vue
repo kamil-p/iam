@@ -30,6 +30,7 @@
                                             name="login"
                                             prepend-icon="person"
                                             type="text"
+                                            v-model="email"
                                     />
 
                                     <v-text-field
@@ -38,12 +39,13 @@
                                             name="password"
                                             prepend-icon="lock"
                                             type="password"
+                                            v-model="password"
                                     />
                                 </v-form>
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer />
-                                <v-btn color="primary">Login</v-btn>
+                                <v-btn color="primary" @click="onSubmit">Login</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-col>
@@ -54,9 +56,32 @@
 </template>
 
 <script>
+    import { mapActions } from 'vuex'
+
     export default {
-        props: {
-            source: String,
+        data () {
+            return {
+                email: null,
+                password: null,
+                submitted: false
+            }
         },
-    }
+        computed: {
+            //...mapState('account', ['status'])
+        },
+        created () {
+            // reset login status
+            //this.logout();
+        },
+        methods: {
+            ...mapActions('account', ['login']),
+            onSubmit () {
+                this.submitted = true;
+                const { email, password } = this;
+                if (email && password) {
+                    this.login({ email, password })
+                }
+            }
+        }
+    };
 </script>
