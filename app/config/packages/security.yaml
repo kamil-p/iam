@@ -33,5 +33,5 @@ security:
         - { path: '^/api/users', roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: '^/api/authentication', roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: '^/api/refresh_token', roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
-        - { path: '^/api', roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] }
-        - { path: '^/api', roles: ROLE_USER }
+        - { path: '^/api/docs', roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: '^/api', roles: ROLE_ADMIN }

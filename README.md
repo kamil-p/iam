@@ -32,4 +32,4 @@ To run it, you need to have installed first [Docker](https://www.docker.com/). N
  which stores environment variables used by docker. Feel free to modify them to your purposes. 
  - Go to `app` directory and to the same with `.env.dist` file.
  - After you finish that you go once again to `docker` directory and execute the command `docker-compose up` after docker 
- finished you can start using `IAM` by going to [localhost/api](http://localhost/api) page. 
+ finished you can start using `IAM` by going to [http://localhost/api/docs](http://localhost/api/docs) page. 

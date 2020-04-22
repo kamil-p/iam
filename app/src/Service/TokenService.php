@@ -3,14 +3,18 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Exception\Token\InvalidJWTException;
 use App\Exception\Token\TokenExpiredException;
+use App\Helper\ExceptionHelper;
 use App\Repository\TokenRepository;
 use App\Repository\UserRepository;
 use App\Resources\Authentication;
 use App\Security\JWT;
 use DateTime;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Throwable;
 
 class TokenService
 {
@@ -24,12 +28,15 @@ class TokenService
 
     private UserPasswordEncoderInterface $passwordEncoder;
 
-    public function __construct(JWT $jwt, UserRepository $userRepository, TokenRepository $tokenRepository, UserPasswordEncoderInterface $passwordEncoder)
+    private LoggerInterface $logger;
+
+    public function __construct(JWT $jwt, UserRepository $userRepository, TokenRepository $tokenRepository, UserPasswordEncoderInterface $passwordEncoder, LoggerInterface $logger)
     {
         $this->jwt = $jwt;
         $this->userRepository = $userRepository;
         $this->tokenRepository = $tokenRepository;
         $this->passwordEncoder = $passwordEncoder;
+        $this->logger = $logger;
     }
 
     public function createTokens(Authentication $authentication): Authentication
@@ -40,7 +47,8 @@ class TokenService
             throw new BadRequestHttpException("Invalid password");
         }
 
-        $token = $user->createNewToken();
+        $this->tokenRepository->deleteExpiredTokens($user);
+        $token = $user->getValidToken();
 
         $authentication->setToken($this->createJWTTokenFromUser($user));
         $authentication->setRefreshToken($token->getRefreshToken());
@@ -80,7 +88,13 @@ class TokenService
 
     public function getUserFromToken(string $token): User
     {
-        $object = $this->jwt->decode($token);
+        try {
+            $object = $this->jwt->decode(str_replace('Bearer ', '', $token));
+        } catch (Throwable $e) {
+            $this->logger->error($e->getMessage(), ExceptionHelper::toLoggerContext($e));
+            throw new InvalidJWTException();
+        }
+
         $now = new DateTime();
         $expiresAt = (new DateTime())->setTimestamp($object->{self::PROPERTY_EXPIRES_AT});
 

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Token;
+use App\Entity\User;
 use DateTime;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -38,5 +39,18 @@ class TokenRepository extends AbstractRepository
         }
 
         throw new BadRequestHttpException("Token not found");
+    }
+
+    public function deleteExpiredTokens(User $user): void
+    {
+        $now = new DateTime();
+        $this->createQueryBuilder('t')
+            ->delete()
+            ->where('t.user = :userId')
+            ->andWhere('t.expiresAt < :now')
+            ->setParameter('userId', $user->getId())
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->execute();
     }
 }

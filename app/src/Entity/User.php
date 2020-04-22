@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
@@ -16,16 +18,23 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
- *     normalizationContext={"groups"={"signup-response"}},
- *     denormalizationContext={"groups"={"signup-request"}},
- *     collectionOperations={"post"},
- *     itemOperations={"get"}
+ *     normalizationContext={"groups"={"response"}},
+ *     denormalizationContext={"groups"={"request"}},
+ *     collectionOperations={"post", "get"},
  * )
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
 class User implements UserInterface
 {
+    public const ROLE_USER = 'ROLE_USER';
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+
+    public const ROLES = [
+        self::ROLE_USER,
+        self::ROLE_ADMIN,
+    ];
+
     use TimestampableEntity;
     use SoftDeleteableEntity;
 
@@ -40,20 +49,21 @@ class User implements UserInterface
     /**
      * @Assert\Email()
      * @Assert\NotBlank()
-     * @Groups({"signup-request", "signup-response"})
+     * @Groups({"request", "response"})
      * @ORM\Column(type="string", length=180, unique=true, nullable=false)
      */
     private string $email;
 
     /**
+     * @Groups({"response"})
      * @ORM\Column(type="json")
      */
-    private array $roles = [];
+    private array $roles = [self::ROLE_USER];
 
     /**
      * @Assert\NotBlank()
      * @ORM\Column(type="string", nullable=false)
-     * @Groups("signup-request")
+     * @Groups("request")
      */
     private string $password;
 
@@ -92,7 +102,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string)$this->email;
+        return $this->email;
     }
 
     /**
@@ -114,6 +124,13 @@ class User implements UserInterface
         return $this;
     }
 
+    public function addRole(string $role)
+    {
+        if (in_array($role, self::ROLES, true)) {
+            $this->roles[] = $role;
+        }
+    }
+
     public function createNewToken(): Token
     {
         $token = new Token($this);
@@ -127,7 +144,7 @@ class User implements UserInterface
      */
     public function getPassword(): string
     {
-        return (string)$this->password;
+        return $this->password;
     }
 
     public function setPassword(string $password): self
@@ -160,5 +177,32 @@ class User implements UserInterface
             'id' => $this->getId()->toString(),
             'email' => $this->getEmail()
         ];
+    }
+
+    /**
+     * @return Collection|ArrayCollection|Token[]
+     */
+    private function getTokens(): Collection
+    {
+        return $this->tokens;
+    }
+
+    public function getValidToken(): ?Token
+    {
+        $now = new DateTime();
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->gt('expiresAt', $now));
+
+        $tokens = $this->getTokens()->matching($criteria);
+
+        $token = $tokens->first();
+
+        if($token) {
+            $token->updateExpiresAt();
+        } else {
+            $token = $this->createNewToken();
+        }
+
+        return $token;
     }
 }

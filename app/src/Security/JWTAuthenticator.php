@@ -18,6 +18,11 @@ class JWTAuthenticator extends AbstractGuardAuthenticator
 
     private TokenService $tokenService;
 
+    public function __construct(TokenService $tokenService)
+    {
+        $this->tokenService = $tokenService;
+    }
+
     public function supports(Request $request)
     {
         return $request->headers->has(self::AUTH_HEADER);
