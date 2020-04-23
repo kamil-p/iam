@@ -1,7 +1,7 @@
 export default class User {
-    constructor(token, refreshToken, email) {
-        this.token = token;
-        this.refreshToken = refreshToken;
+    constructor(id, email, token) {
+        this.id = id;
         this.email = email;
+        this.token = token;
     }
 }
