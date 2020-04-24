@@ -1,14 +1,14 @@
 <template>
-    <HelloWorld></HelloWorld>
+    <Table></Table>
 </template>
 
 <script>
-    import HelloWorld from "../components/HelloWorld";
+    import Table from "../components/Table";
 
     export default {
         name: "Panel",
         components: {
-            HelloWorld
+            Table
         }
     }
 </script>

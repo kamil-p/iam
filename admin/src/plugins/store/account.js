@@ -1,5 +1,6 @@
-import axios from "axios";
+import axios from '../axios';
 import userService from '../../services/userService';
+import router from '../router';
 
 const user = JSON.parse(localStorage.getItem('user'));
 const state = user;
@@ -7,9 +8,10 @@ const state = user;
 const actions = {
     login({ commit }, { email, password }) {
         console.log({ email, password });
-        axios.post('http://localhost/api/authentication', { email, password })
+        axios.post('authentication', { email, password })
             .then(response => {
                 commit('userLoggedIn', userService.createUserFromLoginResponse(response.data));
+                router.push('panel');
             })
             .catch(({response}) => { console.log(response); })
     }
