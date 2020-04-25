@@ -18,9 +18,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
- *     normalizationContext={"groups"={"response"}},
- *     denormalizationContext={"groups"={"request"}},
- *     collectionOperations={"post", "get"},
+ *     normalizationContext={"groups"={"default"}},
+ *     collectionOperations={
+ *            "post"={"denormalization_context"={"groups"={"signup"}}},
+ *            "get"={"normalization_context"={"groups"={"default"}}}
+ *      },
  * )
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -43,29 +45,45 @@ class User implements UserInterface
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
+     * @Groups({"default"})
      */
     private UuidInterface $id;
 
     /**
      * @Assert\Email()
      * @Assert\NotBlank()
-     * @Groups({"request", "response"})
+     * @Groups({"signup", "response", "default"})
      * @ORM\Column(type="string", length=180, unique=true, nullable=false)
      */
     private string $email;
 
     /**
-     * @Groups({"response"})
      * @ORM\Column(type="json")
+     * @Groups("default")
      */
     private array $roles = [self::ROLE_USER];
 
     /**
      * @Assert\NotBlank()
      * @ORM\Column(type="string", nullable=false)
-     * @Groups("request")
+     * @Groups("signup")
      */
     private string $password;
+
+    /**
+     * @Groups("default")
+     */
+    protected $createdAt;
+
+    /**
+     * @Groups("default")
+     */
+    protected $updatedAt;
+
+    /**
+     * @Groups("default")
+     */
+    protected $deletedAt;
 
     /**
      * @ORM\OneToMany(targetEntity="Token", mappedBy="user", cascade={"persist"})
