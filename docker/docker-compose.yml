@@ -19,12 +19,12 @@ services:
             args:
                 TIMEZONE: ${TIMEZONE}
         volumes:
-            - ../app:/var/www/app:delegated
+            - ../api:/var/www/api:delegated
             - ./volumes/logs/iam_php/:/var/www/symfony/var/logs:delegated
     iam_nginx:
         build: nginx
         ports:
             - 80:80
         volumes:
-            - ../app:/var/www/app:delegated
+            - ../api:/var/www/api:delegated
             - ./volumes/logs/nginx/:/var/log/nginx:delegated
