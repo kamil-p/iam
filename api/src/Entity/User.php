@@ -71,16 +71,23 @@ class User implements UserInterface
     private string $password;
 
     /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime")
      * @Groups("default")
      */
     protected $createdAt;
 
     /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(type="datetime")
      * @Groups("default")
      */
     protected $updatedAt;
 
     /**
+     * @var DateTime
      * @Groups("default")
      */
     protected $deletedAt;
