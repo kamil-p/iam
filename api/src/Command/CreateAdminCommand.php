@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class CreateAdminCommand extends Command
 {
-    protected static $defaultName = 'iam:create-admin';
+    protected static $defaultName = 'iam:create-admin-client';
 
     private UserRepository $userRepository;
 
@@ -53,7 +53,7 @@ class CreateAdminCommand extends Command
     private function askForEmail(InputInterface $input, OutputInterface $output): string
     {
         $helper = $this->getHelper('question');
-        $question = new Question('What a new admin email? ');
+        $question = new Question('What a new admin-client email? ');
 
         $email = $helper->ask($input, $output, $question);
 
@@ -71,7 +71,7 @@ class CreateAdminCommand extends Command
     private function askForPassword(InputInterface $input, OutputInterface $output): string
     {
         $helper = $this->getHelper('question');
-        $question = new Question('What is a new admin password? ');
+        $question = new Question('What is a new admin-client password? ');
         $question->setHidden(true);
         $question->setHiddenFallback(false);
 
