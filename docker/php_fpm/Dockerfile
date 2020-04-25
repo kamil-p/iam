@@ -33,4 +33,4 @@ COPY php-ini-overrides.ini /usr/local/etc/php/php.ini
 
 RUN echo 'alias sf="php app/console"' >> ~/.bashrc
 
-WORKDIR /var/www/app
+WORKDIR /var/www/api
