@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class CreateAdminCommand extends Command
 {
-    protected static $defaultName = 'iam:create-admin-client';
+    protected static $defaultName = 'iam:create-admin';
 
     private UserRepository $userRepository;
 
