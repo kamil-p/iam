@@ -1,14 +1,19 @@
 <template>
-    <Table></Table>
+    <v-content>
+        <AppBar/>
+        <Table></Table>
+    </v-content>
 </template>
 
 <script>
+    import AppBar from "../components/AppBar";
     import Table from "../components/Table";
 
     export default {
         name: "Panel",
         components: {
-            Table
+            Table,
+            AppBar
         }
     }
 </script>

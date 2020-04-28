@@ -4,9 +4,14 @@
       <v-data-table
               :headers="headers"
               :items="desserts"
-              :items-per-page="5"
+              :items-per-page="10"
               class="elevation-1"
-      ></v-data-table>
+      >
+        <template v-slot:item.createdAt="{ item }">
+          <span>{{new Date(item.createdAt).toLocaleString()}}</span>
+          <span>{{new Date(item.updatedAt).toLocaleString()}}</span>
+        </template>
+      </v-data-table>
     </template>
   </v-container>
 </template>
@@ -27,8 +32,7 @@
         },
         { text: 'Email', value: 'email' },
         { text: 'Created at', value: 'createdAt' },
-        { text: 'Updated at', value: 'deletedAt' },
-        { text: 'Deleted at', value: 'deletedAt' },
+        { text: 'Updated at', value: 'updatedAt' },
       ],
       desserts: [],
     }),

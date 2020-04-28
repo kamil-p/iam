@@ -21,7 +21,7 @@
                                     flat
                             >
                                 <v-toolbar-title>Login form</v-toolbar-title>
-                                <v-spacer />
+                                <v-spacer/>
                             </v-toolbar>
                             <v-card-text>
                                 <v-form>
@@ -44,8 +44,8 @@
                                 </v-form>
                             </v-card-text>
                             <v-card-actions>
-                                <v-spacer />
-                                <v-btn color="primary" @click="onSubmit">Login</v-btn>
+                                <v-spacer/>
+                                <v-btn color="primary" @click="onSubmit" :loading="loggingIn">Login</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-col>
@@ -56,31 +56,28 @@
 </template>
 
 <script>
-    import { mapActions } from 'vuex'
+    import { mapActions, mapState } from 'vuex'
 
     export default {
         name: 'Login',
-        data () {
+        data() {
             return {
                 email: null,
                 password: null,
-                submitted: false
             }
         },
         computed: {
-            //...mapState('account', ['status'])
+            ...mapState('account', ['loggingIn']),
         },
-        created () {
-            // reset login status
-            //this.logout();
+        created() {
         },
         methods: {
             ...mapActions('account', ['login']),
-            onSubmit () {
+            onSubmit() {
                 this.submitted = true;
-                const { email, password } = this;
+                const {email, password} = this;
                 if (email && password) {
-                    this.login({ email, password })
+                    this.login({email, password})
                 }
             }
         }
