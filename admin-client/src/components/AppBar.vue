@@ -5,13 +5,12 @@
                 prominent
                 src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"
         >
-            <v-app-bar-nav-icon></v-app-bar-nav-icon>
 
-            <v-toolbar-title>Vuetify</v-toolbar-title>
+            <v-toolbar-title>Admin panel</v-toolbar-title>
 
             <v-spacer></v-spacer>
 
-            <v-btn icon>
+            <v-btn @click="logout" icon>
                 <v-icon>mdi-export</v-icon>
             </v-btn>
         </v-toolbar>
@@ -19,6 +18,8 @@
 </template>
 
 <script>
+    import router from "../plugins/router";
+
     export default {
         name: 'AppBar',
 
@@ -26,7 +27,8 @@
         }),
         methods: {
             logout() {
-
+                localStorage.removeItem('user');
+                router.push('/');
             }
         },
     }
