@@ -12,7 +12,7 @@ const actions = {
             .then(response => {
                 commit('userLoggedIn', userService.createUserFromLoginResponse(response.data));
                 commit('userLoggingIn', false);
-                router.push('panel');
+                router.push({ name: 'panel_table' });
             })
             .catch(({response}) => {
                 commit('userLoggingIn', false);

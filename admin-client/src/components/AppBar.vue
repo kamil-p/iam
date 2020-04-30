@@ -28,7 +28,7 @@
         methods: {
             logout() {
                 localStorage.removeItem('user');
-                router.push('/');
+                router.push({ name: 'home' });
             }
         },
     }
