@@ -67,9 +67,7 @@
             }
         },
         computed: {
-            ...mapState('account', ['loggingIn']),
-        },
-        created() {
+            ...mapState('account', ['loggingIn', 'user']),
         },
         methods: {
             ...mapActions('account', ['login']),

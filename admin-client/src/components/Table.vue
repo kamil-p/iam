@@ -7,9 +7,14 @@
               :items-per-page="10"
               class="elevation-1"
       >
+        <template v-slot:item.id="{ item }">
+          <span><router-link :to="{ name: 'panel_user', params: { userId: item.id }}">{{ item.id }}</router-link></span>
+        </template>
         <template v-slot:item.createdAt="{ item }">
-          <span>{{new Date(item.createdAt).toLocaleString()}}</span>
-          <span>{{new Date(item.updatedAt).toLocaleString()}}</span>
+          <span>{{ new Date(item.createdAt).toLocaleString() }}</span>
+        </template>
+        <template v-slot:item.updatedAt="{ item }">
+          <span>{{ new Date(item.updatedAt).toLocaleString() }}</span>
         </template>
       </v-data-table>
     </template>
