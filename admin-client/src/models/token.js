@@ -5,5 +5,7 @@ export default class Token {
         this.refreshToken = refreshToken;
     }
 
-
+    expired() {
+        return this.expiresAt < (Date.now()/1000);
+    }
 }

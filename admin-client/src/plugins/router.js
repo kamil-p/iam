@@ -38,7 +38,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     const user = store.state.account.user;
-    if (user && to.name === 'home') {
+    if (user && !user.token.expired() && to.name === 'home') {
         next({name: 'panel_table'});
     } else if (user === null && to.name !== 'home') {
         next({ name: 'home'});

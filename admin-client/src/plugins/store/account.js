@@ -1,14 +1,17 @@
-import axios from '../axios';
 import userService from '../../services/userService';
 import router from '../router';
+import iamClient from "../../services/iamClient";
 
-const user = JSON.parse(localStorage.getItem('user'));
+let user = JSON.parse(localStorage.getItem('user'));
+if (user !== null) {
+    user = userService.createUserFromLocalStorage(user);
+}
 const state = { user, loggingIn: false };
 
 const actions = {
     login({ commit }, { email, password }) {
         commit('userLoggingIn', true);
-        axios.post('authentication', { email, password })
+        iamClient.authenticate(email, password)
             .then(response => {
                 commit('userLoggedIn', userService.createUserFromLoginResponse(response.data));
                 commit('userLoggingIn', false);
@@ -17,7 +20,7 @@ const actions = {
             .catch(({response}) => {
                 commit('userLoggingIn', false);
                 console.log(response);
-            })
+            });
     }
 }
 
