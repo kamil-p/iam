@@ -1,10 +1,22 @@
 import axios from '../plugins/axios';
 import Token from "../models/token";
+import store from '../plugins/store';
+import User from "../models/user";
 
-function valdateToken(token) {
-    if (!(token instanceof Token)) {
+function validateToken(userModel) {
+    if (!(userModel instanceof User)) {
         throw 'Given argument is not instance of token';
     }
+
+    if (!(userModel.token instanceof Token)) {
+        throw 'Given argument is not instance of token';
+    }
+}
+
+function getHeaders() {
+    const userModel = store.state.account.user;
+    validateToken(userModel);
+    return { headers: {Authorization: `Bearer ${userModel.token.token}`, Accept: 'application/json'}};
 }
 
 class IamClient {
@@ -12,9 +24,12 @@ class IamClient {
         return axios.post('authentication', { email, password });
     }
 
-    getUsers(token) {
-        valdateToken(token);
-        return axios.get('users', { headers: {Authorization: `Bearer ${token.token}`, Accept: 'application/json'}});
+    getUsers() {
+        return axios.get('users', getHeaders());
+    }
+
+    getUser(id) {
+        return axios.get('users/' + id, getHeaders());
     }
 }
 

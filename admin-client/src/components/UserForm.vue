@@ -1,15 +1,6 @@
 <template>
     <ValidationObserver ref="observer" >
         <form>
-            <ValidationProvider v-slot="{ errors }" name="Name" rules="required|max:10">
-                <v-text-field
-                        v-model="name"
-                        :counter="10"
-                        :error-messages="errors"
-                        label="Name"
-                        required
-                ></v-text-field>
-            </ValidationProvider>
             <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
                 <v-text-field
                         v-model="email"
@@ -18,29 +9,27 @@
                         required
                 ></v-text-field>
             </ValidationProvider>
-            <ValidationProvider v-slot="{ errors }" name="select" rules="required">
-                <v-select
-                        v-model="select"
-                        :items="items"
-                        :error-messages="errors"
-                        label="Select"
-                        data-vv-name="select"
-                        required
-                ></v-select>
-            </ValidationProvider>
-            <ValidationProvider v-slot="{ errors }" rules="required" name="checkbox">
-                <v-checkbox
-                        v-model="checkbox"
-                        :error-messages="errors"
-                        value="1"
-                        label="Option"
-                        type="checkbox"
-                        required
-                ></v-checkbox>
-            </ValidationProvider>
+            <v-select
+                    v-model="select"
+                    :items="roles"
+                    label="Roles"
+                    data-vv-name="select"
+                    solo
+            ></v-select>
+            <v-text-field
+                    v-model="createdAt"
+                    label="Created at"
+                    solo
+                    disabled
+            ></v-text-field>
+            <v-text-field
+                    v-model="updatedAt"
+                    label="Updated at"
+                    solo
+                    disabled
+            ></v-text-field>
 
             <v-btn class="mr-4" @click="submit">submit</v-btn>
-            <v-btn @click="clear">clear</v-btn>
         </form>
     </ValidationObserver>
 </template>
@@ -48,6 +37,8 @@
 <script>
     import { required, email, max } from 'vee-validate/dist/rules'
     import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
+    import iamClient from "../services/iamClient";
+
     setInteractionMode('eager')
     extend('required', {
         ...required,
@@ -71,15 +62,26 @@
         data: () => ({
             name: '',
             email: '',
+            createdAt: '',
+            updatedAt: '',
             select: null,
-            items: [
-                'Item 1',
-                'Item 2',
-                'Item 3',
-                'Item 4',
+            roles: [
             ],
             checkbox: null,
         }),
+        created() {
+            iamClient.getUser(this.$route.params.userId)
+                .then(response => {
+                    this.email = response.data.email;
+                    this.createdAt = response.data.createdAt;
+                    this.updatedAt = response.data.updatedAt;
+                    this.roles = response.data.roles;
+                    this.select = this.roles[0];
+                })
+                .catch(({response}) => {
+                    console.log(response);
+                })
+        },
         methods: {
             submit () {
                 this.$refs.observer.validate()
