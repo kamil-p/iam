@@ -1,5 +1,6 @@
 <template>
     <ValidationObserver ref="observer" >
+        <Snackbar/>
         <form>
             <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
                 <v-text-field
@@ -38,6 +39,7 @@
     import { required, email, max } from 'vee-validate/dist/rules'
     import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
     import iamClient from "../services/iamClient";
+    import Snackbar from "./Snackbar";
 
     setInteractionMode('eager')
     extend('required', {
@@ -58,6 +60,7 @@
         components: {
             ValidationProvider,
             ValidationObserver,
+            Snackbar
         },
         data: () => ({
             name: '',
@@ -85,6 +88,10 @@
         methods: {
             submit () {
                 this.$refs.observer.validate()
+                iamClient.patchUser(this.$route.params.userId, this.email)
+                    .catch(({response}) => {
+                        console.log(response);
+                    });
             },
             clear () {
                 this.name = ''

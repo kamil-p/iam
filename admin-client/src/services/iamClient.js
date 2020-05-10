@@ -31,6 +31,10 @@ class IamClient {
     getUser(id) {
         return axios.get('users/' + id, getHeaders());
     }
+
+    patchUser(id, email) {
+        return axios.put('users/' + id, { email }, getHeaders());
+    }
 }
 
 export default new IamClient();
