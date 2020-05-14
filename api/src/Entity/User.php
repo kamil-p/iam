@@ -88,6 +88,7 @@ class User implements UserInterface
 
     /**
      * @var DateTime
+     * @ORM\Column(type="datetime")
      * @Groups("default")
      */
     protected $deletedAt;

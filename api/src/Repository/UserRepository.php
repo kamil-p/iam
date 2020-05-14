@@ -33,4 +33,21 @@ class UserRepository extends AbstractRepository
 
         throw new BadRequestHttpException("User not found");
     }
+
+    /**
+     * @return User[]|array
+     */
+    public function findALlIncludingDeleted(): array
+    {
+        $this->_em->getFilters()->disable('softdeleteable');
+
+        return $this->findAll();
+    }
+
+    public function findOneIncludingDeleted(string $id): User
+    {
+        $this->_em->getFilters()->disable('softdeleteable');
+
+        return $this->find($id);
+    }
 }
