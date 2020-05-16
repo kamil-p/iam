@@ -9,10 +9,10 @@
       <span><router-link :to="{ name: 'panel_user', params: { userId: item.id }}">{{ item.id }}</router-link></span>
     </template>
     <template v-slot:item.createdAt="{ item }">
-      <span>{{ new Date(item.createdAt).toLocaleString() }}</span>
+      <span>{{ item.createdAt | moment }}</span>
     </template>
-    <template v-slot:item.updatedAt="{ item }">
-      <span>{{ new Date(item.updatedAt).toLocaleString() }}</span>
+    <template v-slot:item.deletedAt="{ item }">
+      <span>{{ item.deletedAt | moment }}</span>
     </template>
   </v-data-table>
 </template>
@@ -34,7 +34,7 @@
         },
         { text: 'Email', value: 'email' },
         { text: 'Created at', value: 'createdAt' },
-        { text: 'Updated at', value: 'updatedAt' },
+        { text: 'Deleted at', value: 'deletedAt' },
       ],
       desserts: [],
     }),

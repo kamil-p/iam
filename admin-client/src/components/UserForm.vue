@@ -17,18 +17,8 @@
                     data-vv-name="select"
                     solo
             ></v-select>
-            <v-text-field
-                    v-model="createdAt"
-                    label="Created at"
-                    solo
-                    disabled
-            ></v-text-field>
-            <v-text-field
-                    v-model="updatedAt"
-                    label="Updated at"
-                    solo
-                    disabled
-            ></v-text-field>
+            <DatePicker label="Created at" :date="createdAt"></DatePicker>
+            <DatePicker label="Created at" :date="deletedAt"></DatePicker>
 
             <v-btn class="mr-4" @click="submit">submit</v-btn>
         </form>
@@ -40,6 +30,8 @@
     import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
     import iamClient from "../services/iamClient";
     import Snackbar from "./Snackbar";
+    import moment from 'moment';
+    import DatePicker from "./DatePicker";
 
     setInteractionMode('eager')
     extend('required', {
@@ -58,6 +50,7 @@
     export default {
         name: 'UserForm',
         components: {
+            DatePicker,
             ValidationProvider,
             ValidationObserver,
             Snackbar
@@ -66,7 +59,7 @@
             name: '',
             email: '',
             createdAt: '',
-            updatedAt: '',
+            deletedAt: '',
             select: null,
             roles: [
             ],
@@ -76,8 +69,9 @@
             iamClient.getUser(this.$route.params.userId)
                 .then(response => {
                     this.email = response.data.email;
-                    this.createdAt = response.data.createdAt;
-                    this.updatedAt = response.data.updatedAt;
+                    this.createdAt = moment(response.data.createdAt);
+                    this.createdAt2 = response.data.createdAt;
+                    this.deletedAt = response.data.deletedAt;
                     this.roles = response.data.roles;
                     this.select = this.roles[0];
                 })
