@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -38,7 +37,6 @@ class User implements UserInterface
     ];
 
     use TimestampableEntity;
-    use SoftDeleteableEntity;
 
     /**
      * @ORM\Id
@@ -87,7 +85,7 @@ class User implements UserInterface
     protected $updatedAt;
 
     /**
-     * @var DateTime
+     * @var ?DateTime
      * @ORM\Column(type="datetime")
      * @Groups("default")
      */
@@ -230,5 +228,15 @@ class User implements UserInterface
         }
 
         return $token;
+    }
+
+    public function getDeletedAt(): ?DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?DateTime $deletedAt): void
+    {
+        $this->deletedAt = $deletedAt;
     }
 }

@@ -5,6 +5,7 @@ namespace App\DataPersister;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use DateTime;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 final class UserDataPersister implements ContextAwareDataPersisterInterface
@@ -19,25 +20,30 @@ final class UserDataPersister implements ContextAwareDataPersisterInterface
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function supports($data, array $context = []): bool
+    public function supports($user, array $context = []): bool
     {
-        return $data instanceof User;
+        return $user instanceof User;
     }
 
     /**
-     * @param User $data
+     * @param User $user
      * @param array $context
      * @return object|void
      */
-    public function persist($data, array $context = [])
+    public function persist($user, array $context = [])
     {
-        $data->setPassword($this->passwordEncoder->encodePassword($data, $data->getPassword()));
-        $this->userRepository->save($data);
-        return $data;
+        $user->setPassword($this->passwordEncoder->encodePassword($user, $user->getPassword()));
+        $this->userRepository->save($user);
+        return $user;
     }
 
-    public function remove($data, array $context = [])
+    /**
+     * @param User $user
+     * @param array $context
+     */
+    public function remove($user, array $context = [])
     {
-        // call your persistence layer to delete $data
+        $user->setDeletedAt(new DateTime());
+        $this->userRepository->save($user);
     }
 }

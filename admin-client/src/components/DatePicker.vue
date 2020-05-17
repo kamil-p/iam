@@ -14,7 +14,7 @@
                             :label="label"
                             persistent-hint
                             readonly
-                            solo
+                            :disabled="!value"
                             v-on="on"
                     ></v-text-field>
                 </template>

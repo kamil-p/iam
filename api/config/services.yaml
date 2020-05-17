@@ -31,6 +31,13 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    # Overridden services
+
+    serializer.normalizer.datetime:
+        class: App\Normalizer\DateTimeNormalizer
+        tags:
+            - { name: serializer.normalizer }
+
     # Repositories
     App\Repository\UserRepository:
         class: App\Repository\UserRepository
@@ -51,3 +58,5 @@ services:
         arguments:
             $privateKey: '%private_key%'
             $publicKey: '%public_key%'
+
+

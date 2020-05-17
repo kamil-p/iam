@@ -15,12 +15,14 @@
                     :items="roles"
                     label="Roles"
                     data-vv-name="select"
-                    solo
             ></v-select>
             <DatePicker label="Created at" :date="createdAt"></DatePicker>
-            <DatePicker label="Created at" :date="deletedAt"></DatePicker>
+            <DatePicker label="Deleted at" :date="deletedAt"></DatePicker>
 
             <v-btn class="mr-4" @click="submit">submit</v-btn>
+            <v-btn v-if="!deletedAt" class="mr-4" color="error" @click="remove">delete</v-btn>
+            <v-btn v-if="deletedAt" class="mr-4" color="primary" @click="undelete">undelete</v-btn>
+
         </form>
     </ValidationObserver>
 </template>
@@ -70,8 +72,7 @@
                 .then(response => {
                     this.email = response.data.email;
                     this.createdAt = moment(response.data.createdAt);
-                    this.createdAt2 = response.data.createdAt;
-                    this.deletedAt = response.data.deletedAt;
+                    this.deletedAt = response.data.deletedAt ? moment(response.data.deletedAt) : null;
                     this.roles = response.data.roles;
                     this.select = this.roles[0];
                 })
@@ -80,14 +81,26 @@
                 })
         },
         methods: {
-            submit () {
+            submit() {
                 this.$refs.observer.validate()
                 iamClient.patchUser(this.$route.params.userId, this.email)
                     .catch(({response}) => {
                         console.log(response);
                     });
             },
-            clear () {
+            undelete() {
+                iamClient.undeleteUser(this.$route.params.userId)
+                    .catch(({response}) => {
+                        console.log(response);
+                    });
+            },
+            remove() {
+                iamClient.deleteUser(this.$route.params.userId)
+                    .catch(({response}) => {
+                        console.log(response);
+                    });
+            },
+            clear() {
                 this.name = ''
                 this.email = ''
                 this.select = null

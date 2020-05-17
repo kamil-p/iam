@@ -35,6 +35,14 @@ class IamClient {
     patchUser(id, email) {
         return axios.put('users/' + id, { email }, getHeaders());
     }
+
+    undeleteUser(id) {
+        return axios.put('users/' + id, { deletedAt: null }, getHeaders());
+    }
+
+    deleteUser(id) {
+        return axios.delete('users/' + id, getHeaders());
+    }
 }
 
 export default new IamClient();
