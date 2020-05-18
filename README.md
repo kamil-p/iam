@@ -25,7 +25,7 @@ Below screenshot present available endpoints:
 ![API Platform](docs/api_platform.png)
 
 
-## How to run it?
+## How to run backend part?
 
 To run it, you need to have installed first [Docker](https://www.docker.com/). Next:
  - Go to `docker` directory copy and paste `.env.dist` without `.dist` suffix, you should end up with file `.env`
@@ -33,3 +33,34 @@ To run it, you need to have installed first [Docker](https://www.docker.com/). N
  - Go to `app` directory and to the same with `.env.dist` file.
  - After you finish that you go once again to `docker` directory and execute the command `docker-compose up` after docker 
  finished you can start using `IAM` by going to [http://localhost/api/docs](http://localhost/api/docs) page. 
+ 
+ # IAM Client
+ 
+IAM Client was written using [VueJS](https://vuejs.org/) with support of [VuetifyJS](https://vuetifyjs.com/), and many other great libraries.
+
+### Screenshots
+
+Login page
+
+![Login page](docs/login.png)
+
+Users list
+
+![Users list](docs/users_list.png)
+
+User form
+
+![User form](docs/user_form.png)
+
+Deleted user
+
+![Deleted user](docs/deleted_user.png)
+
+
+
+## How to run frontend part?
+
+To run it, install first  [yarn](https://classic.yarnpkg.com/en/docs/install/) or npm. Next:
+ - go to the `admin-client` directory
+ - run command `yarn install` - it will install all dependencies 
+ - on the last step you have to run `yarn serve` page should be available on [http://localhost:8080/](http://localhost:8080/) address
