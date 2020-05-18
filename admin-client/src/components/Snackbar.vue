@@ -1,7 +1,7 @@
 <template>
     <v-card>
         <v-snackbar
-                v-model="snackbar"
+                v-model="show"
                 :bottom="y === 'bottom'"
                 :color="color"
                 :left="x === 'left'"
@@ -11,11 +11,11 @@
                 :top="y === 'top'"
                 :vertical="mode === 'vertical'"
         >
-            {{ text }}
+            {{ message }}
             <v-btn
                     dark
                     text
-                    @click="snackbar = false"
+                    @click="show = false"
             >
                 Close
             </v-btn>
@@ -29,15 +29,29 @@
         name: 'Snackbar',
         data () {
             return {
-                color: 'primary',
                 mode: '',
-                snackbar: false,
-                text: 'User updated',
                 timeout: 1000,
                 x: null,
                 y: 'top',
+                show: false,
+                message: '',
+                color: '',
             }
         },
+        methods: {
+            close() {
+                this.show = false;
+            }
+        },
+        created() {
+            this.$store.subscribe((mutation, state) => {
+                if (mutation.type === 'snackbar/show') {
+                    this.message = state.snackbar.message;
+                    this.color = state.snackbar.color;
+                    this.show = true;
+                }
+            })
+        }
     }
 </script>
 

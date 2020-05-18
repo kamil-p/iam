@@ -9,10 +9,10 @@
       <span><router-link :to="{ name: 'panel_user', params: { userId: item.id }}">{{ item.id }}</router-link></span>
     </template>
     <template v-slot:item.createdAt="{ item }">
-      <span>{{ item.createdAt | moment }}</span>
+      <span>{{ item.createdAt | moment("YYYY-MM-DD hh:mm:ss") }}</span>
     </template>
     <template v-slot:item.deletedAt="{ item }">
-      <span>{{ item.deletedAt | moment }}</span>
+      <span>{{ item.deletedAt | moment("YYYY-MM-DD hh:mm:ss") }}</span>
     </template>
   </v-data-table>
 </template>

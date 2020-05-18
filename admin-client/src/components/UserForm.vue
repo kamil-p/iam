@@ -19,21 +19,48 @@
             <DatePicker label="Created at" :date="createdAt"></DatePicker>
             <DatePicker label="Deleted at" :date="deletedAt"></DatePicker>
 
-            <v-btn class="mr-4" @click="submit">submit</v-btn>
-            <v-btn v-if="!deletedAt" class="mr-4" color="error" @click="remove">delete</v-btn>
-            <v-btn v-if="deletedAt" class="mr-4" color="primary" @click="undelete">undelete</v-btn>
+            <div v-if="email">
+                <v-btn class="mr-4" @click="submit" :loading="loading">submit</v-btn>
+                <v-btn v-if="!deletedAt" class="mr-4" color="error" @click="remove" :loading="loading">delete</v-btn>
+                <v-btn v-if="deletedAt" class="mr-4" color="primary" @click="undelete" :loading="loading">undelete</v-btn>
+            </div>
 
         </form>
     </ValidationObserver>
 </template>
 
 <script>
-    import { required, email, max } from 'vee-validate/dist/rules'
-    import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
+    import { required, email, max } from 'vee-validate/dist/rules';
+    import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate';
     import iamClient from "../services/iamClient";
     import Snackbar from "./Snackbar";
     import moment from 'moment';
     import DatePicker from "./DatePicker";
+    import snackbarNotifier from "../plugins/service/snackbarNotifier";
+
+
+    function loadUser(userId, vm) {
+        iamClient.getUser(userId)
+            .then(response => {
+                setupUserData(response, vm);
+                toggleLoading(vm);
+            })
+            .catch(response => {
+                console.log(response);
+            });
+    }
+
+    function setupUserData(response, vm) {
+        vm.email = response.data.email;
+        vm.createdAt = moment(response.data.createdAt);
+        vm.deletedAt = response.data.deletedAt ? moment(response.data.deletedAt) : null;
+        vm.roles = response.data.roles;
+        vm.select = vm.roles[0];
+    }
+
+    function toggleLoading(vm) {
+        vm.loading = !vm.loading;
+    }
 
     setInteractionMode('eager')
     extend('required', {
@@ -66,37 +93,49 @@
             roles: [
             ],
             checkbox: null,
+            loading: false,
         }),
         created() {
-            iamClient.getUser(this.$route.params.userId)
-                .then(response => {
-                    this.email = response.data.email;
-                    this.createdAt = moment(response.data.createdAt);
-                    this.deletedAt = response.data.deletedAt ? moment(response.data.deletedAt) : null;
-                    this.roles = response.data.roles;
-                    this.select = this.roles[0];
-                })
-                .catch(({response}) => {
-                    console.log(response);
-                })
+            toggleLoading(this);
+            loadUser(this.$route.params.userId, this);
         },
         methods: {
             submit() {
                 this.$refs.observer.validate()
+                toggleLoading(this);
                 iamClient.patchUser(this.$route.params.userId, this.email)
-                    .catch(({response}) => {
+                    .then(response => {
+                        setupUserData(response, this);
+                        toggleLoading(this);
+                        snackbarNotifier.notify('User has been updated');
+                    })
+                    .catch(response => {
+                        toggleLoading(this);
                         console.log(response);
                     });
             },
             undelete() {
+                toggleLoading(this);
                 iamClient.undeleteUser(this.$route.params.userId)
-                    .catch(({response}) => {
+                    .then(response => {
+                        setupUserData(response, this);
+                        toggleLoading(this);
+                        snackbarNotifier.notify('User has been restored');
+                    })
+                    .catch(response => {
+                        toggleLoading(this);
                         console.log(response);
                     });
             },
             remove() {
+                toggleLoading(this);
                 iamClient.deleteUser(this.$route.params.userId)
-                    .catch(({response}) => {
+                    .then(() => {
+                        loadUser(this.$route.params.userId, this);
+                        snackbarNotifier.notify('User has been deleted');
+                    })
+                    .catch(response => {
+                        toggleLoading(this);
                         console.log(response);
                     });
             },
